@@ -44,11 +44,18 @@ app.get("/", (req, res) => {
 
 /* SEARCH */
 app.post("/search", async (req, res) => {
-    const countryName = req.body.country;
+    const raw = String(req.body.country || "").trim();
+    // Restrict to letters/spaces/hyphens/apostrophes — kills SSRF and
+    // path-traversal before the value reaches the upstream URL. Also
+    // URL-encode just in case.
+    if (!/^[A-Za-z\s'-]{1,64}$/.test(raw)) {
+        return res.render("index.ejs", { country: null });
+    }
+    const countryName = raw;
 
     try {
         const response = await axios.get(
-            `https://restcountries.com/v3.1/name/${countryName}`
+            `https://restcountries.com/v3.1/name/${encodeURIComponent(countryName)}`
         );
 
         const results = response.data;
