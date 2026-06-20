@@ -45,7 +45,7 @@ app.get("/", (req, res) => {
 /* SEARCH */
 app.post("/search", async (req, res) => {
     const raw = String(req.body.country || "").trim();
-    // Restrict to letters/spaces/hyphens/apostrophes — kills SSRF and
+    // Restrict to letters/spaces/hyphens/apostrophes. Kills SSRF and
     // path-traversal before the value reaches the upstream URL. Also
     // URL-encode just in case.
     if (!/^[A-Za-z\s'-]{1,64}$/.test(raw)) {
